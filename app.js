@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var CATS = ["genre", "condition", "keyword"];
+  var CATS = ["genre", "keyword"];
   var EASE_OUT = "cubic-bezier(0.23, 1, 0.32, 1)";
   var EASE_IN_OUT = "cubic-bezier(0.77, 0, 0.175, 1)";
 
@@ -115,10 +115,7 @@
       cards.forEach(function (card, i) {
         var text = pick(CATS[i]);
         result[CATS[i]] = text;
-        var desc = card.querySelector(".desc");
-        var cut = text.indexOf(":");
-        card.querySelector(".value").textContent = desc && cut > -1 ? text.slice(0, cut).trim() : text;
-        if (desc) desc.textContent = cut > -1 ? text.slice(cut + 1).trim() : "";
+        card.querySelector(".value").textContent = text;
       });
       return dealCards();
     }).then(function () {
@@ -140,13 +137,7 @@
     lists[cat].forEach(function (text) {
       var li = document.createElement("li");
       var body = document.createElement("span");
-      var cut = cat === "condition" ? text.indexOf(":") : -1;
-      body.textContent = cut > -1 ? text.slice(0, cut).trim() : text;
-      if (cut > -1) {
-        var small = document.createElement("small");
-        small.textContent = text.slice(cut + 1).trim();
-        body.appendChild(small);
-      }
+      body.textContent = text;
       li.appendChild(body);
       ol.appendChild(li);
     });
@@ -259,25 +250,16 @@
     setPanel(false);
   });
 
-  function split(text) {
-    var cut = text.indexOf(":");
-    return cut > -1 ? [text.slice(0, cut).trim(), text.slice(cut + 1).trim()] : [text, ""];
-  }
-
   function openResults() {
     var tbody = document.getElementById("resultsBody");
     tbody.textContent = "";
     for (var i = 1; i <= TEAM_COUNT; i++) {
       var r = teams[i];
       var tr = document.createElement("tr");
-      var cells = [i + "조", r ? r.genre : "-", null, r ? r.keyword : "-"];
+      var cells = [i + "조", r ? r.genre : "-", r ? r.keyword : "-"];
       cells.forEach(function (c, k) {
         var td = document.createElement(k === 0 ? "th" : "td");
-        if (k === 2) {
-          var parts = r ? split(r.condition) : ["-", ""];
-          td.textContent = parts[0];
-          if (parts[1]) { var sm = document.createElement("small"); sm.textContent = parts[1]; td.appendChild(sm); }
-        } else td.textContent = c;
+        td.textContent = c;
         tr.appendChild(td);
       });
       tbody.appendChild(tr);
