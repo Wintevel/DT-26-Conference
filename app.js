@@ -250,10 +250,12 @@
     setPanel(false);
   });
 
-  function openResults() {
+  var resultsTabs = Array.prototype.slice.call(document.querySelectorAll(".results-tab"));
+
+  function renderResults(from, to) {
     var tbody = document.getElementById("resultsBody");
     tbody.textContent = "";
-    for (var i = 1; i <= TEAM_COUNT; i++) {
+    for (var i = from; i <= to; i++) {
       var r = teams[i];
       var tr = document.createElement("tr");
       var cells = [i + "조", r ? r.genre : "-", r ? r.keyword : "-"];
@@ -264,6 +266,16 @@
       });
       tbody.appendChild(tr);
     }
+    resultsTabs.forEach(function (tab) {
+      tab.setAttribute("aria-selected", String(+tab.dataset.from === from));
+    });
+  }
+  resultsTabs.forEach(function (tab) {
+    tab.addEventListener("click", function () { renderResults(+tab.dataset.from, +tab.dataset.to); });
+  });
+
+  function openResults() {
+    renderResults(1, 6);
     resultsDlg.showModal();
     if (resultsDlg.animate) {
       resultsDlg.animate([
