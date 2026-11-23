@@ -22,5 +22,6 @@
 
 ## 배포 (GitHub Pages)
 
-`main` 브랜치에 푸시하면 `.github/workflows/pages.yml`이 자동 배포합니다.
-처음 한 번은 저장소 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 바꿔 주세요.
+사이트 주소: https://wintevel.github.io/DT-26-Conference/
+
+GitHub Pages는 `gh-pages` 브랜치를 배포합니다. `main`에 푸시하면 `.github/workflows/pages.yml`이 `main` 내용을 `gh-pages`로 복사해서 1~2분 뒤 사이트에 반영됩니다.
