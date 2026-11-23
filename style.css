@@ -28,6 +28,21 @@ button { font: inherit; }
   pointer-events: none; z-index: 0;
 }
 .lines line { stroke: var(--gray-2); stroke-width: 1; vector-effect: non-scaling-stroke; }
+/* 배경 선이 아주 천천히 흐릅니다. 장식용이라 CSS 애니메이션(메인 스레드 밖)으로 돌립니다. */
+.lines g { transform-box: view-box; transform-origin: 50% 50%; will-change: transform; }
+.drift-a { animation: drift-a 70s cubic-bezier(0.77, 0, 0.175, 1) infinite alternate; }
+.drift-b { animation: drift-b 54s cubic-bezier(0.77, 0, 0.175, 1) infinite alternate; }
+@keyframes drift-a {
+  from { transform: rotate(-3deg) scale(1.02); }
+  to   { transform: rotate(3deg) scale(1.02); }
+}
+@keyframes drift-b {
+  from { transform: translate(-60px, 30px); }
+  to   { transform: translate(60px, -30px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .drift-a, .drift-b { animation: none; }
+}
 
 .bar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 2;
