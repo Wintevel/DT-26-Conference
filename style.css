@@ -140,3 +140,54 @@ h1 { margin: 0; font-size: clamp(40px, 7vw, 96px); font-weight: 900; letter-spac
   .card[data-cat="condition"] { height: 170px; }
   .value { font-size: 24px; }
 }
+
+/* 오른쪽 아래 목록 버튼과 팝업 */
+.list-btn {
+  position: fixed; right: 24px; bottom: 44px; z-index: 3;
+  width: 28px; height: 28px; padding: 0; border: 0; border-radius: 0;
+  background: var(--black); cursor: pointer;
+  transition: transform 160ms var(--ease-out);
+}
+.list-btn:active { transform: scale(0.97); }
+.list-btn:focus-visible { outline: 2px solid var(--black); outline-offset: 3px; }
+
+.list {
+  width: min(960px, calc(100vw - 32px)); max-height: calc(100dvh - 64px);
+  padding: 0; border: 1.5px solid var(--black); border-radius: 0;
+  background: var(--white); color: var(--black); font-family: var(--font);
+  overflow: hidden;
+}
+.list[open] { display: flex; flex-direction: column; }
+.list::backdrop { background: rgba(0, 0, 0, .55); }
+.list-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px; border-bottom: 1.5px solid var(--black);
+}
+.list-head h2 { margin: 0; font-size: 18px; font-weight: 800; }
+.list-close {
+  width: 32px; height: 32px; border: 0; background: none; cursor: pointer;
+  font-size: 24px; line-height: 1; color: var(--black);
+}
+.list-close:focus-visible { outline: 2px solid var(--black); }
+.list-body {
+  display: grid; grid-template-columns: 1fr 1fr 2.2fr; gap: 28px;
+  padding: 20px; overflow-y: auto;
+}
+.list-body h3 {
+  margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1.5px solid var(--black);
+  display: flex; justify-content: space-between; font-size: 14px; font-weight: 800;
+}
+.list-body h3 span { order: 2; font-size: 11px; font-weight: 700; color: var(--gray-4); align-self: flex-end; }
+.list-body ol { margin: 0; padding: 0; list-style: none; counter-reset: n; }
+.list-body li {
+  counter-increment: n; display: grid; grid-template-columns: 24px 1fr; gap: 4px;
+  padding: 6px 0; border-bottom: 1px solid var(--gray-2); font-size: 14px; font-weight: 600; line-height: 1.45;
+}
+.list-body li::before { content: counter(n, decimal-leading-zero); font-size: 11px; font-weight: 700; color: var(--gray-3); padding-top: 2px; }
+.list-body li small { display: block; font-size: 12px; font-weight: 500; color: var(--gray-4); word-break: keep-all; }
+
+@media (max-width: 720px) {
+  .list-btn { right: 16px; bottom: 40px; }
+  .list-body { grid-template-columns: 1fr 1fr; gap: 20px; padding: 16px; }
+  .list-body .wide { grid-column: 1 / -1; }
+}

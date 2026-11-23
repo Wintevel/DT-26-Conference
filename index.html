@@ -68,6 +68,20 @@
 
   <footer class="band" aria-hidden="true"></footer>
 
+  <button class="list-btn" id="listBtn" type="button" aria-label="전체 목록 보기" aria-haspopup="dialog"></button>
+
+  <dialog class="list" id="list" aria-labelledby="listTitle">
+    <div class="list-head">
+      <h2 id="listTitle">전체 목록</h2>
+      <button class="list-close" id="listClose" type="button" aria-label="닫기">×</button>
+    </div>
+    <div class="list-body">
+      <section><h3><span>GENRE</span>장르</h3><ol id="list-genre"></ol></section>
+      <section><h3><span>KEYWORD</span>키워드</h3><ol id="list-keyword"></ol></section>
+      <section class="wide"><h3><span>CONDITION</span>특수조건</h3><ol id="list-condition"></ol></section>
+    </div>
+  </dialog>
+
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>

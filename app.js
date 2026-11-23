@@ -123,4 +123,57 @@
   }
 
   btn.addEventListener("click", draw);
+
+  // ---------- 전체 목록 팝업 ----------
+  var dlg = document.getElementById("list");
+  var listBtn = document.getElementById("listBtn");
+
+  CATS.forEach(function (cat) {
+    var ol = document.getElementById("list-" + cat);
+    lists[cat].forEach(function (text) {
+      var li = document.createElement("li");
+      var body = document.createElement("span");
+      var cut = cat === "condition" ? text.indexOf(":") : -1;
+      body.textContent = cut > -1 ? text.slice(0, cut).trim() : text;
+      if (cut > -1) {
+        var small = document.createElement("small");
+        small.textContent = text.slice(cut + 1).trim();
+        body.appendChild(small);
+      }
+      li.appendChild(body);
+      ol.appendChild(li);
+    });
+  });
+
+  function openList() {
+    if (dlg.open) return;
+    dlg.showModal();
+    if (!dlg.animate) return;
+    var reduce = mq.matches;
+    dlg.animate([
+      { opacity: 0, transform: reduce ? "none" : "scale(0.96)" },
+      { opacity: 1, transform: "none" }
+    ], { duration: 220, easing: EASE_OUT });
+  }
+
+  var closing = false;
+  function closeList() {
+    if (!dlg.open || closing) return;
+    if (!dlg.animate) { dlg.close(); return; }
+    closing = true;
+    var reduce = mq.matches;
+    finished(dlg.animate([
+      { opacity: 1, transform: "none" },
+      { opacity: 0, transform: reduce ? "none" : "scale(0.96)" }
+    ], { duration: 160, easing: EASE_OUT, fill: "forwards" })).then(function (a) {
+      dlg.close();
+      dlg.getAnimations().forEach(function (an) { an.cancel(); });
+      closing = false;
+    });
+  }
+
+  listBtn.addEventListener("click", openList);
+  document.getElementById("listClose").addEventListener("click", closeList);
+  dlg.addEventListener("cancel", function (e) { e.preventDefault(); closeList(); });
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) closeList(); });
 })();
