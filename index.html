@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>아이디어톤 주제 뽑기</title>
+  <meta name="description" content="2026 DT 학술제 통합 아이디어톤 장르·특수조건·키워드 뽑기">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <div>
+        <p class="eyebrow"><span>2026 INHA UNIV.</span> Design X Technology Conference</p>
+        <h1><em>Integrated Ideathon</em><span>통합 아이디어톤 주제 뽑기</span></h1>
+        <p class="sub">주제는 <b>게임</b>. 장르, 특수조건, 키워드를 뽑아 한 줄짜리 게임을 만들어 보세요.</p>
+      </div>
+      <p class="detour" aria-hidden="true">Detour<br>Ahead</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="controls" aria-label="뽑기 설정">
+      <label class="field">
+        <span>조</span>
+        <select id="team">
+          <option value="">선택 안 함</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>키워드 개수</span>
+        <select id="kwCount">
+          <option value="1">1개</option>
+          <option value="2" selected>2개</option>
+          <option value="3">3개</option>
+        </select>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="noDupGenre">
+        <span>다른 조와 장르 겹치지 않게</span>
+      </label>
+      <button class="ghost" id="editBtn" type="button">목록 편집</button>
+    </section>
+
+    <section class="slots" aria-live="polite">
+      <article class="slot" data-cat="genre">
+        <header><span class="tag">Genre</span><h2>장르</h2></header>
+        <div class="result"><span class="placeholder">?</span></div>
+        <footer>
+          <button type="button" class="mini reroll" data-cat="genre">이것만 다시</button>
+          <button type="button" class="mini lock" data-cat="genre" aria-pressed="false">고정</button>
+        </footer>
+      </article>
+      <article class="slot" data-cat="condition">
+        <header><span class="tag">Condition</span><h2>특수조건</h2></header>
+        <div class="result"><span class="placeholder">?</span></div>
+        <footer>
+          <button type="button" class="mini reroll" data-cat="condition">이것만 다시</button>
+          <button type="button" class="mini lock" data-cat="condition" aria-pressed="false">고정</button>
+        </footer>
+      </article>
+      <article class="slot" data-cat="keyword">
+        <header><span class="tag">Keyword</span><h2>키워드</h2></header>
+        <div class="result"><span class="placeholder">?</span></div>
+        <footer>
+          <button type="button" class="mini reroll" data-cat="keyword">이것만 다시</button>
+          <button type="button" class="mini lock" data-cat="keyword" aria-pressed="false">고정</button>
+        </footer>
+      </article>
+    </section>
+
+    <div class="draw-row">
+      <button id="drawBtn" class="draw" type="button">뽑기</button>
+      <p id="status" class="status" role="status"></p>
+    </div>
+
+    <section class="history">
+      <div class="history-head">
+        <h2>뽑기 기록</h2>
+        <div class="history-actions">
+          <button class="ghost" id="copyBtn" type="button">텍스트로 복사</button>
+          <button class="ghost danger" id="clearBtn" type="button">기록 지우기</button>
+        </div>
+      </div>
+      <p class="hint">조를 선택하고 뽑으면 기록에 남습니다. 기록은 이 브라우저에만 저장됩니다.</p>
+      <ol id="historyList" class="history-list"></ol>
+    </section>
+  </main>
+
+  <footer class="foot wrap">2026 DT 학술제 · 통합 아이디어톤</footer>
+
+  <dialog id="editor">
+    <form method="dialog" class="editor-form">
+      <h2>목록 편집</h2>
+      <p class="hint">한 줄에 한 항목씩 적어 주세요. 이 브라우저에만 저장됩니다.</p>
+      <div class="editor-grid">
+        <label><span>장르 <small id="cnt-genre"></small></span><textarea id="ed-genre" rows="14"></textarea></label>
+        <label><span>특수조건 <small id="cnt-condition"></small></span><textarea id="ed-condition" rows="14"></textarea></label>
+        <label><span>키워드 <small id="cnt-keyword"></small></span><textarea id="ed-keyword" rows="14"></textarea></label>
+      </div>
+      <div class="editor-actions">
+        <button type="button" class="ghost danger" id="resetLists">기본 목록으로 되돌리기</button>
+        <span class="spacer"></span>
+        <button value="cancel" class="ghost">취소</button>
+        <button type="button" class="primary" id="saveLists">저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
