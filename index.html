@@ -71,6 +71,27 @@
 
   <footer class="band" aria-hidden="true"></footer>
 
+  <div class="team-dock">
+    <div class="team-panel" id="teamPanel" aria-hidden="true">
+      <span class="team-hint" id="teamHint"></span>
+    </div>
+    <button class="team-btn" id="teamBtn" type="button" aria-expanded="false" aria-controls="teamPanel"></button>
+  </div>
+
+  <dialog class="list" id="results" aria-labelledby="resultsTitle">
+    <div class="list-head">
+      <h2 id="resultsTitle">조별 결과</h2>
+      <button class="list-close" id="resultsClose" type="button" aria-label="닫기">×</button>
+    </div>
+    <div class="list-body results-body">
+      <table class="results-table">
+        <thead><tr><th>조</th><th>장르</th><th>특수조건</th><th>키워드</th></tr></thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+      <button class="results-reset" id="resultsReset" type="button">기록 초기화</button>
+    </div>
+  </dialog>
+
   <button class="list-btn" id="listBtn" type="button" aria-label="전체 목록 보기" aria-haspopup="dialog"></button>
 
   <dialog class="list" id="list" aria-labelledby="listTitle">

@@ -138,7 +138,7 @@ h1 { margin: 0; font-size: clamp(40px, 7vw, 96px); font-weight: 900; letter-spac
 /* 모바일: 카드를 가로형으로 세로 배치 */
 @media (max-width: 720px) {
   .bar { padding: 14px 16px; font-size: 11px; }
-  .stage { padding: 56px 16px 56px; gap: 20px; }
+  .stage { padding: 56px 16px 136px; gap: 20px; }
   .deck { grid-template-columns: 1fr; gap: 12px; }
   .card { aspect-ratio: auto; height: 150px; }
   .card[data-cat="condition"] { height: 190px; }
@@ -203,6 +203,73 @@ h1 { margin: 0; font-size: clamp(40px, 7vw, 96px); font-weight: 900; letter-spac
 
 @media (max-width: 720px) {
   .list-btn { right: 16px; bottom: 40px; }
+  .team-dock { right: 16px; bottom: 76px; }
   .list-body { grid-template-columns: 1fr 1fr; gap: 20px; padding: 16px; }
   .list-body .wide { grid-column: 1 / -1; }
+}
+
+/* 조 배정: 목록 버튼 위의 흰 박스, 옆으로 펼쳐지는 1~13조 */
+:root { --red: #e5221f; }
+.team-dock {
+  position: fixed; right: 24px; bottom: 80px; z-index: 3;
+  display: flex; align-items: center; gap: 8px;
+}
+.team-btn {
+  order: 2; flex: none;
+  width: 28px; height: 28px; padding: 0; border-radius: 0; cursor: pointer;
+  background: var(--white); border: 1.5px solid var(--black);
+  transition: transform 160ms var(--ease-out), background-color 240ms ease, border-color 240ms ease;
+}
+.team-btn:active { transform: scale(0.97); }
+.team-btn[aria-expanded="true"] { background: var(--black); }
+.team-btn.complete { background: var(--red); border-color: var(--red); }
+.team-btn:focus-visible { outline: 2px solid var(--black); outline-offset: 3px; }
+
+.team-panel {
+  order: 1;
+  display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px;
+  max-width: calc(100vw - 80px);
+  padding: 4px; background: var(--white); border: 1.5px solid var(--black);
+  clip-path: inset(0 0 0 100%); opacity: 0; pointer-events: none;
+  transition: clip-path 260ms var(--ease-out), opacity 200ms var(--ease-out);
+}
+.team-panel.open { clip-path: inset(0 0 0 0); opacity: 1; pointer-events: auto; }
+.team-hint {
+  order: -1; padding: 0 8px 0 4px; font-size: 11px; font-weight: 700; color: var(--gray-4); white-space: nowrap;
+}
+.team {
+  width: 28px; height: 28px; padding: 0; border: 1.5px solid var(--black); border-radius: 0;
+  background: var(--white); color: var(--black); font-size: 12px; font-weight: 800; cursor: pointer;
+  transition: transform 160ms var(--ease-out), background-color 200ms ease, color 200ms ease;
+}
+.team:active:not(:disabled) { transform: scale(0.97); }
+.team:disabled { cursor: default; opacity: .3; }
+.team.done { background: var(--black); color: var(--white); opacity: 1; }
+.team:focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .team:hover:not(:disabled) { background: var(--black); color: var(--white); }
+}
+
+.results-body { display: block; }
+.results-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.results-table th, .results-table td {
+  text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid var(--gray-2); word-break: keep-all;
+}
+.results-table thead th { font-size: 12px; font-weight: 800; border-bottom: 1.5px solid var(--black); }
+.results-table tbody th { font-weight: 900; white-space: nowrap; width: 56px; }
+.results-table td { font-weight: 700; }
+.results-table td small { display: block; margin-top: 2px; font-size: 12px; font-weight: 500; color: var(--gray-4); }
+.results-reset {
+  margin-top: 16px; border: 1.5px solid var(--black); background: var(--white); border-radius: 0;
+  padding: 8px 14px; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--red);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-panel { transition: opacity 200ms ease; }
+}
+@media (max-width: 720px) {
+  .team-panel { max-width: calc(100vw - 72px); }
+  .team, .team-btn { width: 26px; height: 26px; }
+  .results-table { font-size: 13px; }
+  .results-table th, .results-table td { padding: 8px 6px; }
 }

@@ -20,6 +20,7 @@
   var mq = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
   var busy = false;
   var last = {};
+  var pending = null;   // 아직 조에 배정하지 않은 이번 결과
 
   function randInt(n) {
     if (window.crypto && window.crypto.getRandomValues) {
@@ -107,9 +108,13 @@
     btn.disabled = true;
 
     var leave = deck.hidden ? hideIntro() : clearCards();
+    var result = {};
+    pending = null;
+    renderTeams();
     leave.then(function () {
       cards.forEach(function (card, i) {
         var text = pick(CATS[i]);
+        result[CATS[i]] = text;
         var desc = card.querySelector(".desc");
         var cut = text.indexOf(":");
         card.querySelector(".value").textContent = desc && cut > -1 ? text.slice(0, cut).trim() : text;
@@ -117,6 +122,8 @@
       });
       return dealCards();
     }).then(function () {
+      pending = result;
+      renderTeams();
       btn.disabled = false;
       busy = false;
     });
@@ -176,4 +183,142 @@
   document.getElementById("listClose").addEventListener("click", closeList);
   dlg.addEventListener("cancel", function (e) { e.preventDefault(); closeList(); });
   dlg.addEventListener("click", function (e) { if (e.target === dlg) closeList(); });
+
+  // ---------- 조 배정 ----------
+  var TEAM_COUNT = 13;
+  var KEY = "dt26-team-results";
+  var teamBtn = document.getElementById("teamBtn");
+  var teamPanel = document.getElementById("teamPanel");
+  var teamHint = document.getElementById("teamHint");
+  var resultsDlg = document.getElementById("results");
+  var teams = {};
+  try { teams = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { teams = {}; }
+
+  function saveTeams() {
+    try { localStorage.setItem(KEY, JSON.stringify(teams)); } catch (e) { /* 저장 불가 환경 */ }
+  }
+  function doneCount() {
+    var n = 0;
+    for (var i = 1; i <= TEAM_COUNT; i++) if (teams[i]) n++;
+    return n;
+  }
+  function allDone() { return doneCount() === TEAM_COUNT; }
+
+  var teamButtons = [];
+  for (var t = 1; t <= TEAM_COUNT; t++) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "team";
+    b.textContent = t;
+    b.dataset.team = t;
+    b.setAttribute("aria-label", t + "조에 이번 결과 배정");
+    teamPanel.insertBefore(b, teamHint);
+    teamButtons.push(b);
+  }
+
+  function renderTeams() {
+    teamButtons.forEach(function (b) {
+      var done = !!teams[b.dataset.team];
+      b.classList.toggle("done", done);
+      b.disabled = done || !pending;
+    });
+    teamHint.textContent = pending ? "조를 고르세요" : "DRAW 후 선택";
+    var finished = allDone();
+    teamBtn.classList.toggle("complete", finished);
+    teamBtn.setAttribute("aria-label", finished ? "전체 조 결과 보기" : "조 선택 열기 (" + doneCount() + "/" + TEAM_COUNT + ")");
+    if (finished) setPanel(false);
+  }
+
+  function setPanel(open) {
+    teamPanel.classList.toggle("open", open);
+    teamPanel.setAttribute("aria-hidden", String(!open));
+    teamPanel.inert = !open;
+    teamBtn.setAttribute("aria-expanded", String(open));
+  }
+  setPanel(false);
+
+  teamBtn.addEventListener("click", function () {
+    if (allDone()) { openResults(); return; }
+    setPanel(!teamPanel.classList.contains("open"));
+  });
+  teamPanel.addEventListener("click", function (e) {
+    var b = e.target.closest(".team");
+    if (!b || b.disabled || !pending) return;
+    teams[b.dataset.team] = pending;
+    pending = null;
+    saveTeams();
+    renderTeams();
+    setTimeout(function () { setPanel(false); }, 260);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && teamPanel.classList.contains("open")) setPanel(false);
+  });
+  document.addEventListener("click", function (e) {
+    if (!teamPanel.classList.contains("open")) return;
+    if (teamPanel.contains(e.target) || teamBtn.contains(e.target)) return;
+    setPanel(false);
+  });
+
+  function split(text) {
+    var cut = text.indexOf(":");
+    return cut > -1 ? [text.slice(0, cut).trim(), text.slice(cut + 1).trim()] : [text, ""];
+  }
+
+  function openResults() {
+    var tbody = document.getElementById("resultsBody");
+    tbody.textContent = "";
+    for (var i = 1; i <= TEAM_COUNT; i++) {
+      var r = teams[i];
+      var tr = document.createElement("tr");
+      var cells = [i + "조", r ? r.genre : "-", null, r ? r.keyword : "-"];
+      cells.forEach(function (c, k) {
+        var td = document.createElement(k === 0 ? "th" : "td");
+        if (k === 2) {
+          var parts = r ? split(r.condition) : ["-", ""];
+          td.textContent = parts[0];
+          if (parts[1]) { var sm = document.createElement("small"); sm.textContent = parts[1]; td.appendChild(sm); }
+        } else td.textContent = c;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
+    resultsDlg.showModal();
+    if (resultsDlg.animate) {
+      resultsDlg.animate([
+        { opacity: 0, transform: mq.matches ? "none" : "scale(0.96)" },
+        { opacity: 1, transform: "none" }
+      ], { duration: 220, easing: EASE_OUT });
+    }
+  }
+  function closeResults() {
+    if (!resultsDlg.open) return;
+    if (!resultsDlg.animate) { resultsDlg.close(); return; }
+    finished(resultsDlg.animate([
+      { opacity: 1, transform: "none" },
+      { opacity: 0, transform: mq.matches ? "none" : "scale(0.96)" }
+    ], { duration: 160, easing: EASE_OUT, fill: "forwards" })).then(function () {
+      resultsDlg.close();
+      resultsDlg.getAnimations().forEach(function (an) { an.cancel(); });
+    });
+  }
+  document.getElementById("resultsClose").addEventListener("click", closeResults);
+  resultsDlg.addEventListener("cancel", function (e) { e.preventDefault(); closeResults(); });
+  resultsDlg.addEventListener("click", function (e) { if (e.target === resultsDlg) closeResults(); });
+
+  var resetBtn = document.getElementById("resultsReset");
+  resetBtn.addEventListener("click", function () {
+    if (resetBtn.dataset.armed !== "1") {
+      resetBtn.dataset.armed = "1";
+      resetBtn.textContent = "한 번 더 누르면 초기화";
+      setTimeout(function () { resetBtn.dataset.armed = ""; resetBtn.textContent = "기록 초기화"; }, 3000);
+      return;
+    }
+    teams = {};
+    saveTeams();
+    resetBtn.dataset.armed = ""; resetBtn.textContent = "기록 초기화";
+    closeResults();
+    renderTeams();
+  });
+
+  renderTeams();
 })();
