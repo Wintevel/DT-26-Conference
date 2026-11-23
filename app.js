@@ -109,11 +109,14 @@
     var leave = deck.hidden ? hideIntro() : clearCards();
     leave.then(function () {
       cards.forEach(function (card, i) {
-        card.querySelector(".value").textContent = pick(CATS[i]);
+        var text = pick(CATS[i]);
+        var desc = card.querySelector(".desc");
+        var cut = text.indexOf(":");
+        card.querySelector(".value").textContent = desc && cut > -1 ? text.slice(0, cut).trim() : text;
+        if (desc) desc.textContent = cut > -1 ? text.slice(cut + 1).trim() : "";
       });
       return dealCards();
     }).then(function () {
-      btn.textContent = "다시 뽑기";
       btn.disabled = false;
       busy = false;
     });
